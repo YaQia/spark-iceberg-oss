@@ -6,6 +6,8 @@
 
 A production-ready Docker image integrating Apache Spark with Apache Iceberg and Alibaba Cloud OSS (Object Storage Service) support. This project provides a complete solution for running Spark workloads with Iceberg table format on Aliyun OSS.
 
+📖 **[简体中文](README_CN.md)** | **[FAQ](FAQ.md)** | **[Contributing](CONTRIBUTING.md)** | **[Versions](VERSIONS.md)**
+
 ## 🌟 Features
 
 - **Official Apache Spark 3.5.0** base image with Scala 2.12, Java 11, and Python 3
@@ -22,6 +24,19 @@ A production-ready Docker image integrating Apache Spark with Apache Iceberg and
 - Aliyun OSS Account with Access Key and Secret
 
 ## 🚀 Quick Start
+
+### Option 1: Automated Setup (Recommended)
+
+```bash
+# Clone and run the quick start script
+git clone https://github.com/YaQia/spark-iceberg-oss.git
+cd spark-iceberg-oss
+./quick-start.sh
+```
+
+The script will guide you through the setup process.
+
+### Option 2: Manual Setup
 
 ### 1. Clone the Repository
 
@@ -45,15 +60,15 @@ EOF
 
 **Important:** Make sure to update `conf/spark-defaults.conf` with your OSS credentials and bucket information.
 
-### 3. Build the Docker Image
+### 3. Build and Start
 
 ```bash
+# Using Make (recommended)
+make build
+make up
+
+# Or using Docker Compose directly
 docker build -t spark-iceberg-oss:latest .
-```
-
-### 4. Start the Cluster
-
-```bash
 docker-compose up -d
 ```
 
@@ -61,12 +76,21 @@ This will start:
 - Spark Master (Web UI: http://localhost:8080)
 - Spark Worker (Web UI: http://localhost:8081)
 
+### 4. Test OSS Connectivity
+
+```bash
+./scripts/test-oss.sh
+```
+
 ### 5. Run Examples
 
 #### PySpark Example
 
 ```bash
-# Execute in the running container
+# Using Make
+make example
+
+# Or directly
 docker exec -it spark-iceberg-master \
     spark-submit \
     --master spark://spark-master:7077 \
@@ -304,18 +328,82 @@ spec:
 - Regular table maintenance (expire snapshots, compact files)
 - Tune Spark memory and executor settings
 
+For more troubleshooting help, see [FAQ.md](FAQ.md).
+
+## 🛠️ Utility Scripts
+
+The project includes several utility scripts in the `scripts/` directory:
+
+### Test OSS Connectivity
+
+```bash
+./scripts/test-oss.sh
+```
+
+Tests OSS connection and verifies configuration.
+
+### Monitor Cluster
+
+```bash
+./scripts/monitor.sh
+```
+
+Displays cluster status, resource usage, and recent logs.
+
+### Backup/Restore Metadata
+
+```bash
+# Backup a database
+./scripts/backup.sh backup mydb
+
+# Restore a database
+./scripts/backup.sh restore mydb
+
+# List available backups
+./scripts/backup.sh list
+```
+
+### Make Commands
+
+Use the Makefile for convenient operations:
+
+```bash
+make help      # Show all available commands
+make build     # Build Docker image
+make up        # Start cluster
+make down      # Stop cluster
+make logs      # View logs
+make shell     # Open bash shell
+make sql       # Start Spark SQL
+make pyspark   # Start PySpark
+make example   # Run example
+make clean     # Clean up
+```
+
 ## 📦 What's Included
 
 ```
 spark-iceberg-oss/
 ├── Dockerfile                          # Main Docker image definition
 ├── docker-compose.yml                  # Multi-container setup
+├── Makefile                           # Convenient command shortcuts
+├── quick-start.sh                     # Automated setup script
+├── .env.template                      # Environment variables template
 ├── conf/
 │   └── spark-defaults.conf            # Spark configuration
 ├── examples/
 │   ├── iceberg_oss_example.py         # PySpark example
 │   ├── iceberg_sql_examples.sql       # SQL examples
 │   └── run_example.sh                 # Example execution script
+├── scripts/
+│   ├── test-oss.sh                    # OSS connectivity test
+│   ├── monitor.sh                     # Cluster monitoring
+│   └── backup.sh                      # Backup/restore utility
+├── docs/
+│   ├── README_CN.md                   # Chinese documentation
+│   ├── FAQ.md                         # Frequently asked questions
+│   ├── CONTRIBUTING.md                # Contribution guidelines
+│   └── VERSIONS.md                    # Component versions
 ├── .gitignore                         # Git ignore rules
 ├── LICENSE                            # Apache 2.0 License
 └── README.md                          # This file
