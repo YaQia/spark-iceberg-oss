@@ -36,7 +36,10 @@ COPY conf/spark-defaults.conf ${SPARK_HOME}/conf/spark-defaults.conf
 WORKDIR /opt/spark/work-dir
 
 # Switch back to spark user
-USER 185
+USER spark
+
+# Add spark executables to PATH
+ENV PATH=$PATH:/opt/spark/bin
 
 # Expose Spark ports
 EXPOSE 4040 7077 8080 8081
