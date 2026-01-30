@@ -18,7 +18,7 @@ if ! command -v docker &> /dev/null; then
 fi
 
 # Check if Docker Compose is installed
-if ! command -v docker-compose &> /dev/null; then
+if ! command -v docker compose &> /dev/null; then
     echo "❌ Error: Docker Compose is not installed."
     echo "Please install Docker Compose from https://docs.docker.com/compose/install/"
     exit 1
@@ -66,7 +66,7 @@ echo ""
 
 # Start services
 echo "🚀 Starting Spark cluster..."
-docker-compose up -d
+docker compose up -d
 
 if [ $? -eq 0 ]; then
     echo "✅ Spark cluster started successfully"
@@ -101,9 +101,9 @@ echo "   docker exec -it spark-iceberg-master \\"
 echo "     pyspark --master spark://spark-master:7077"
 echo ""
 echo "4. View logs:"
-echo "   docker-compose logs -f"
+echo "   docker compose logs -f"
 echo ""
 echo "5. Stop cluster:"
-echo "   docker-compose down"
+echo "   docker compose down"
 echo ""
 echo "================================================================"
