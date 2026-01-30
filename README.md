@@ -1,8 +1,8 @@
 # Spark + Iceberg + Aliyun OSS
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Spark](https://img.shields.io/badge/Spark-3.5.0-orange.svg)](https://spark.apache.org/)
-[![Iceberg](https://img.shields.io/badge/Iceberg-1.5.0-blue.svg)](https://iceberg.apache.org/)
+[![Spark](https://img.shields.io/badge/Spark-3.5.5-orange.svg)](https://spark.apache.org/)
+[![Iceberg](https://img.shields.io/badge/Iceberg-1.8.1-blue.svg)](https://iceberg.apache.org/)
 
 A production-ready Docker image integrating Apache Spark with Apache Iceberg and Alibaba Cloud OSS (Object Storage Service) support. This project provides a complete solution for running Spark workloads with Iceberg table format on Aliyun OSS.
 
@@ -10,8 +10,8 @@ A production-ready Docker image integrating Apache Spark with Apache Iceberg and
 
 ## 🌟 Features
 
-- **Official Apache Spark 3.5.0** base image with Scala 2.12, Java 11, and Python 3
-- **Latest Apache Iceberg 1.5.0** runtime for modern table format capabilities
+- **Official Apache Spark 3.5.5** base image with Scala 2.12, Java 11, and Python 3
+- **Latest Apache Iceberg 1.8.1** runtime for modern table format capabilities
 - **Full Aliyun OSS Integration** with hadoop-aliyun and aliyun-sdk-oss
 - **Docker Compose** setup for easy local development and testing
 - **Comprehensive Examples** in both PySpark and Spark SQL
@@ -114,13 +114,13 @@ Then paste SQL commands from `examples/iceberg_sql_examples.sql`.
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                     Apache Spark 3.5.0                      │
+│                     Apache Spark 3.5.5                      │
 │  ┌───────────────────────────────────────────────────────┐  │
-│  │           Apache Iceberg 1.5.0 Runtime                │  │
+│  │           Apache Iceberg 1.8.1 Runtime                │  │
 │  │  ┌─────────────────────────────────────────────────┐  │  │
 │  │  │         Hadoop Aliyun OSS Connector            │  │  │
 │  │  │  ┌───────────────────────────────────────────┐  │  │  │
-│  │  │  │      Aliyun OSS SDK 3.17.4                │  │  │  │
+│  │  │  │      Aliyun OSS SDK 3.18.5                │  │  │  │
 │  │  │  └───────────────────────────────────────────┘  │  │  │
 │  │  └─────────────────────────────────────────────────┘  │  │
 │  └───────────────────────────────────────────────────────┘  │
@@ -137,10 +137,10 @@ Then paste SQL commands from `examples/iceberg_sql_examples.sql`.
 
 | Component | Version | Purpose |
 |-----------|---------|---------|
-| Apache Spark | 3.5.0 | Distributed computing engine |
-| Apache Iceberg | 1.5.0 | Table format for huge analytic datasets |
+| Apache Spark | 3.5.5 | Distributed computing engine |
+| Apache Iceberg | 1.8.1 | Table format for huge analytic datasets |
 | Hadoop Aliyun | 3.3.4 | OSS FileSystem implementation |
-| Aliyun SDK OSS | 3.17.4 | Aliyun OSS client library |
+| Aliyun SDK OSS | 3.18.5 | Aliyun OSS client library |
 | JDOM2 | 2.0.6.1 | XML processing (OSS dependency) |
 
 ## 🔧 Configuration

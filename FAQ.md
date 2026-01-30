@@ -47,7 +47,7 @@ A:
 ### Q: Can I use this without Docker?
 
 A: Yes, but you'll need to:
-1. Install Apache Spark 3.5.0
+1. Install Apache Spark 3.5.5
 2. Download Iceberg and OSS JARs manually
 3. Configure spark-defaults.conf
 4. Set up SPARK_HOME and CLASSPATH

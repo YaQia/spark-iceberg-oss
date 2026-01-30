@@ -1,5 +1,5 @@
 # Use official Apache Spark image as base
-FROM apache/spark:3.5.0-scala2.12-java11-python3-ubuntu
+FROM apache/spark:3.5.5-scala2.12-java11-python3-ubuntu
 
 # Maintainer information
 LABEL maintainer="YaQia"
@@ -8,9 +8,9 @@ LABEL description="Apache Spark with Iceberg and Aliyun OSS support"
 USER root
 
 # Set environment variables
-ENV ICEBERG_VERSION=1.5.0
+ENV ICEBERG_VERSION=1.8.1
 ENV HADOOP_VERSION=3.3.4
-ENV ALIYUN_SDK_OSS_VERSION=3.17.4
+ENV ALIYUN_SDK_OSS_VERSION=3.18.5
 ENV SPARK_HOME=/opt/spark
 
 # Download and install Iceberg runtime JAR

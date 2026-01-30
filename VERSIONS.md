@@ -6,8 +6,8 @@ This document tracks the versions of all components used in this project.
 
 | Component | Version | Release Date | Notes |
 |-----------|---------|--------------|-------|
-| Apache Spark | 3.5.0 | 2023-09 | Base image |
-| Apache Iceberg | 1.5.0 | 2024-01 | Latest stable release |
+| Apache Spark | 3.5.5 | 2024-10 | Base image |
+| Apache Iceberg | 1.8.1 | 2024-12 | Latest stable release |
 | Scala | 2.12 | - | Compatible with Spark 3.5 |
 | Java | 11 | - | LTS version |
 | Python | 3 | - | For PySpark |
@@ -17,7 +17,7 @@ This document tracks the versions of all components used in this project.
 | Component | Version | Notes |
 |-----------|---------|-------|
 | Hadoop Aliyun | 3.3.4 | OSS FileSystem implementation |
-| Aliyun SDK OSS | 3.17.4 | Latest stable OSS SDK |
+| Aliyun SDK OSS | 3.18.5 | Latest stable OSS SDK |
 | JDOM2 | 2.0.6.1 | XML processing for OSS |
 
 ## Container & Orchestration
@@ -34,7 +34,7 @@ This document tracks the versions of all components used in this project.
 
 | Spark Version | Compatible Iceberg Versions |
 |---------------|----------------------------|
-| 3.5.x | 1.4.x, 1.5.x |
+| 3.5.x | 1.4.x, 1.5.x, 1.6.x, 1.7.x, 1.8.x |
 | 3.4.x | 1.3.x, 1.4.x |
 | 3.3.x | 1.2.x, 1.3.x |
 
@@ -42,6 +42,9 @@ This document tracks the versions of all components used in this project.
 
 | Iceberg Version | Minimum Hadoop Version |
 |-----------------|------------------------|
+| 1.8.x | 3.3.0 |
+| 1.7.x | 3.3.0 |
+| 1.6.x | 3.3.0 |
 | 1.5.x | 3.3.0 |
 | 1.4.x | 3.2.0 |
 
@@ -49,6 +52,9 @@ This document tracks the versions of all components used in this project.
 
 | Date | Component | Old Version | New Version | Reason |
 |------|-----------|-------------|-------------|--------|
+| 2026-01 | Apache Spark | 3.5.0 | 3.5.5 | Upgrade to latest stable 3.5.x release |
+| 2026-01 | Apache Iceberg | 1.5.0 | 1.8.1 | Upgrade to latest stable release with new features |
+| 2026-01 | Aliyun SDK OSS | 3.17.4 | 3.18.5 | Upgrade to latest stable SDK |
 | 2024-01 | Initial Release | - | - | Initial version |
 
 ## Upgrade Notes
@@ -103,4 +109,4 @@ Always check for security updates:
 
 ---
 
-Last updated: 2024-01
+Last updated: 2026-01
