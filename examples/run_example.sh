@@ -9,9 +9,16 @@ set -e
 APP_NAME="iceberg-oss-app"
 MASTER_URL=${SPARK_MASTER_URL:-"local[*]"}
 OSS_ENDPOINT=${OSS_ENDPOINT:-"oss-cn-hangzhou.aliyuncs.com"}
-OSS_ACCESS_KEY_ID=${OSS_ACCESS_KEY_ID:-"YOUR_ACCESS_KEY_ID"}
-OSS_ACCESS_KEY_SECRET=${OSS_ACCESS_KEY_SECRET:-"YOUR_ACCESS_KEY_SECRET"}
+OSS_ACCESS_KEY_ID=${OSS_ACCESS_KEY_ID:-""}
+OSS_ACCESS_KEY_SECRET=${OSS_ACCESS_KEY_SECRET:-""}
 OSS_BUCKET=${OSS_BUCKET:-"your-bucket"}
+
+# Validate credentials
+if [ -z "$OSS_ACCESS_KEY_ID" ] || [ -z "$OSS_ACCESS_KEY_SECRET" ] || [ "$OSS_ACCESS_KEY_ID" = "" ] || [ "$OSS_ACCESS_KEY_SECRET" = "" ]; then
+    echo "❌ Error: OSS credentials not configured"
+    echo "   Please set OSS_ACCESS_KEY_ID and OSS_ACCESS_KEY_SECRET environment variables"
+    exit 1
+fi
 
 # Spark configuration
 SPARK_CONF=(

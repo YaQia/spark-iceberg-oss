@@ -38,7 +38,7 @@ echo ""
 echo "Worker Information:"
 echo "─────────────────"
 docker exec spark-iceberg-master curl -s http://spark-master:8080/json/ | \
-    python3 -c "import sys, json; data=json.load(sys.stdin); print(f'Alive Workers: {len(data.get(\"workers\", []))}'); print(f'Cores: {data.get(\"cores\", 0)}'); print(f'Memory: {data.get(\"memory\", 0)} MB')" 2>/dev/null || \
+    python3 -c 'import sys, json; data=json.load(sys.stdin); print(f"Alive Workers: {len(data.get(\"workers\", []))}"); print(f"Cores: {data.get(\"cores\", 0)}"); print(f"Memory: {data.get(\"memory\", 0)} MB")' 2>/dev/null || \
     echo "Could not fetch worker information"
 
 echo ""

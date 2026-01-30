@@ -67,6 +67,10 @@ example:
 # Test OSS connectivity
 test:
 	@echo "Testing OSS connectivity..."
+	@if [ -z "$(OSS_BUCKET)" ]; then \
+		echo "❌ Error: OSS_BUCKET not set. Please configure .env file"; \
+		exit 1; \
+	fi
 	docker exec -it spark-iceberg-master \
 		hadoop fs -ls oss://$(OSS_BUCKET)/ || echo "OSS connection test failed"
 

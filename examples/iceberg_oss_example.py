@@ -17,10 +17,16 @@ import os
 
 # Configuration
 OSS_ENDPOINT = os.getenv('OSS_ENDPOINT', 'oss-cn-hangzhou.aliyuncs.com')
-OSS_ACCESS_KEY_ID = os.getenv('OSS_ACCESS_KEY_ID', 'YOUR_ACCESS_KEY_ID')
-OSS_ACCESS_KEY_SECRET = os.getenv('OSS_ACCESS_KEY_SECRET', 'YOUR_ACCESS_KEY_SECRET')
+OSS_ACCESS_KEY_ID = os.getenv('OSS_ACCESS_KEY_ID', '')
+OSS_ACCESS_KEY_SECRET = os.getenv('OSS_ACCESS_KEY_SECRET', '')
 OSS_BUCKET = os.getenv('OSS_BUCKET', 'your-bucket')
 OSS_WAREHOUSE = f"oss://{OSS_BUCKET}/warehouse"
+
+# Validate credentials
+if not OSS_ACCESS_KEY_ID or not OSS_ACCESS_KEY_SECRET or OSS_ACCESS_KEY_ID == '' or OSS_ACCESS_KEY_SECRET == '':
+    print("❌ Error: OSS credentials not configured")
+    print("   Please set OSS_ACCESS_KEY_ID and OSS_ACCESS_KEY_SECRET environment variables")
+    exit(1)
 
 def create_spark_session():
     """Create and configure Spark session with Iceberg and OSS support"""

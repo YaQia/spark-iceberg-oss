@@ -44,3 +44,6 @@ data/
 tmp/
 .tmp/
 *.tmp
+
+# Backups
+backups/
