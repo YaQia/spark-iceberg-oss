@@ -34,6 +34,14 @@ A: Choose the endpoint closest to your compute resources:
 - `oss-cn-beijing.aliyuncs.com` - Beijing
 - `oss-cn-shenzhen.aliyuncs.com` - Shenzhen
 
+**Cost Optimization Tip:** If your compute resources (ECS, containers, etc.) are running within Aliyun's network in the same region as your OSS bucket, use internal endpoints instead:
+- `oss-cn-hangzhou-internal.aliyuncs.com` - Hangzhou (Internal)
+- `oss-cn-shanghai-internal.aliyuncs.com` - Shanghai (Internal)
+- `oss-cn-beijing-internal.aliyuncs.com` - Beijing (Internal)
+- `oss-cn-shenzhen-internal.aliyuncs.com` - Shenzhen (Internal)
+
+Using internal endpoints eliminates internet data transfer charges and provides better performance through Aliyun's private network.
+
 See [OSS Endpoints](https://www.alibabacloud.com/help/en/oss/user-guide/regions-and-endpoints) for complete list.
 
 ### Q: How do I get OSS credentials?
