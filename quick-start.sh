@@ -11,17 +11,17 @@ echo "================================================================"
 echo ""
 
 # Check if Docker is installed
-if ! command -v docker &> /dev/null; then
-    echo "❌ Error: Docker is not installed."
-    echo "Please install Docker from https://docs.docker.com/get-docker/"
-    exit 1
+if ! command -v docker &>/dev/null; then
+	echo "❌ Error: Docker is not installed."
+	echo "Please install Docker from https://docs.docker.com/get-docker/"
+	exit 1
 fi
 
 # Check if Docker Compose is installed
-if ! command -v docker compose &> /dev/null; then
-    echo "❌ Error: Docker Compose is not installed."
-    echo "Please install Docker Compose from https://docs.docker.com/compose/install/"
-    exit 1
+if ! command -v docker compose &>/dev/null; then
+	echo "❌ Error: Docker Compose is not installed."
+	echo "Please install Docker Compose from https://docs.docker.com/compose/install/"
+	exit 1
 fi
 
 echo "✅ Docker and Docker Compose are installed"
@@ -29,23 +29,29 @@ echo ""
 
 # Check if .env file exists
 if [ ! -f .env ]; then
-    echo "⚠️  .env file not found. Creating from template..."
-    cp .env.template .env
-    echo ""
-    echo "⚠️  IMPORTANT: Please edit .env file with your Aliyun OSS credentials"
-    echo "   1. Open .env file in your editor"
-    echo "   2. Fill in your OSS_ACCESS_KEY_ID"
-    echo "   3. Fill in your OSS_ACCESS_KEY_SECRET"
-    echo "   4. Update OSS_ENDPOINT for your region"
-    echo "   5. Update OSS_BUCKET with your bucket name"
-    echo ""
-    read -p "Press Enter after you've configured .env file..."
+	echo "⚠️  .env file not found. Creating from template..."
+	cp .env.template .env
+	echo ""
+	echo "⚠️  IMPORTANT: Please edit .env file with your configuration"
+	echo "   1. Aliyun OSS Credentials:"
+	echo "      - OSS_ACCESS_KEY_ID"
+	echo "      - OSS_ACCESS_KEY_SECRET"
+	echo "      - OSS_ENDPOINT (for your region)"
+	echo "      - OSS_BUCKET (your bucket name)"
+	echo ""
+	echo "   2. PostgreSQL Database Configuration (for JDBC Catalog):"
+	echo "      - DB_HOST (default: postgres)"
+	echo "      - DB_PORT (default: 5432)"
+	echo "      - DB_USER (default: iceberg_user)"
+	echo "      - DB_PASSWORD (default: iceberg_password)"
+	echo ""
+	read -p "Press Enter after you've configured .env file..."
 fi
 
 # Check if credentials are still default values
 if grep -q "YOUR_ACCESS_KEY_ID" .env; then
-    echo "❌ Error: Please configure your OSS credentials in .env file"
-    exit 1
+	echo "❌ Error: Please configure your OSS credentials in .env file"
+	exit 1
 fi
 
 echo "✅ Configuration file found"
@@ -56,10 +62,10 @@ echo "📦 Building Docker image..."
 docker build -t spark-iceberg-oss:latest .
 
 if [ $? -eq 0 ]; then
-    echo "✅ Docker image built successfully"
+	echo "✅ Docker image built successfully"
 else
-    echo "❌ Failed to build Docker image"
-    exit 1
+	echo "❌ Failed to build Docker image"
+	exit 1
 fi
 
 echo ""
@@ -69,10 +75,10 @@ echo "🚀 Starting Spark cluster..."
 docker compose up -d
 
 if [ $? -eq 0 ]; then
-    echo "✅ Spark cluster started successfully"
+	echo "✅ Spark cluster started successfully"
 else
-    echo "❌ Failed to start Spark cluster"
-    exit 1
+	echo "❌ Failed to start Spark cluster"
+	exit 1
 fi
 
 echo ""
@@ -84,6 +90,7 @@ echo "Web UIs:"
 echo "  • Spark Master:  http://localhost:8080"
 echo "  • Spark Worker:  http://localhost:8081"
 echo "  • Spark App UI:  http://localhost:4040 (when app is running)"
+echo "  • PostgreSQL:    localhost:5432 (for JDBC Catalog)"
 echo ""
 echo "Quick Commands:"
 echo ""

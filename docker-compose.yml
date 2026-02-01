@@ -1,6 +1,29 @@
 version: '3.8'
 
 services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: iceberg-postgres
+    hostname: postgres
+    environment:
+      POSTGRES_DB: iceberg_catalog
+      POSTGRES_USER: ${DB_USER:-iceberg_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-iceberg_password}
+      POSTGRES_INITDB_ARGS: "-c max_connections=100"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-postgres.sql:/docker-entrypoint-initdb.d/01-init-postgres.sql
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/02-init-db.sql
+    networks:
+      - spark-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-iceberg_user}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   spark-master:
     build: .
     container_name: spark-iceberg-master
@@ -9,6 +32,9 @@ services:
       - "8080:8080"  # Spark Master Web UI
       - "7077:7077"  # Spark Master Port
       - "4040:4040"  # Spark Application UI
+    depends_on:
+      postgres:
+        condition: service_healthy
     env_file:
       - .env
     environment:
@@ -20,6 +46,11 @@ services:
       - OSS_ENDPOINT=${OSS_ENDPOINT}
       - OSS_ACCESS_KEY_ID=${OSS_ACCESS_KEY_ID}
       - OSS_ACCESS_KEY_SECRET=${OSS_ACCESS_KEY_SECRET}
+      # Database Configuration
+      - DB_HOST=${DB_HOST:-postgres}
+      - DB_PORT=${DB_PORT:-5432}
+      - DB_USER=${DB_USER:-iceberg_user}
+      - DB_PASSWORD=${DB_PASSWORD:-iceberg_password}
     volumes:
       - ./examples:/opt/spark/examples
       - ./data:/opt/spark/data
@@ -32,7 +63,10 @@ services:
     build: .
     container_name: spark-iceberg-worker
     depends_on:
-      - spark-master
+      postgres:
+        condition: service_healthy
+      spark-master:
+        condition: service_started
     ports:
       - "8081:8081"  # Spark Worker Web UI
     env_file:
@@ -47,6 +81,11 @@ services:
       - OSS_ENDPOINT=${OSS_ENDPOINT}
       - OSS_ACCESS_KEY_ID=${OSS_ACCESS_KEY_ID}
       - OSS_ACCESS_KEY_SECRET=${OSS_ACCESS_KEY_SECRET}
+      # Database Configuration
+      - DB_HOST=${DB_HOST:-postgres}
+      - DB_PORT=${DB_PORT:-5432}
+      - DB_USER=${DB_USER:-iceberg_user}
+      - DB_PASSWORD=${DB_PASSWORD:-iceberg_password}
     volumes:
       - ./examples:/opt/spark/examples
       - ./data:/opt/spark/data
@@ -58,3 +97,6 @@ services:
 networks:
   spark-network:
     driver: bridge
+
+volumes:
+  postgres_data:

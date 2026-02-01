@@ -25,6 +25,14 @@ RUN curl -L -o ${SPARK_HOME}/jars/aliyun-sdk-oss-${ALIYUN_SDK_OSS_VERSION}.jar \
 RUN curl -L -o ${SPARK_HOME}/jars/hadoop-aliyun-${HADOOP_VERSION}.jar \
     https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aliyun/${HADOOP_VERSION}/hadoop-aliyun-${HADOOP_VERSION}.jar
 
+# Download and install PostgreSQL JDBC driver for JDBC Catalog
+RUN curl -L -o ${SPARK_HOME}/jars/postgresql-42.7.1.jar \
+    https://repo1.maven.org/maven2/org/postgresql/postgresql/42.7.1/postgresql-42.7.1.jar
+
+# Download and install Iceberg JDBC catalog support
+RUN curl -L -o ${SPARK_HOME}/jars/iceberg-core-${ICEBERG_VERSION}.jar \
+    https://repo1.maven.org/maven2/org/apache/iceberg/iceberg-core/${ICEBERG_VERSION}/iceberg-core-${ICEBERG_VERSION}.jar
+
 # Download additional required dependencies for OSS
 RUN curl -L -o ${SPARK_HOME}/jars/jdom2-2.0.6.1.jar \
     https://repo1.maven.org/maven2/org/jdom/jdom2/2.0.6.1/jdom2-2.0.6.1.jar

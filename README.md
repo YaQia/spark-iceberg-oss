@@ -11,10 +11,12 @@ A production-ready Docker image integrating Apache Spark with Apache Iceberg and
 ## 🌟 Features
 
 - **Official Apache Spark 3.5.5** base image with Scala 2.12, Java 11, and Python 3
-- **Latest Apache Iceberg 1.8.1** runtime for modern table format capabilities
+- **Latest Apache Iceberg 1.8.1** runtime with PostgreSQL JDBC Catalog support
 - **Full Aliyun OSS Integration** with hadoop-aliyun and aliyun-sdk-oss
 - **Docker Compose** setup for easy local development and testing
 - **Comprehensive Examples** in both PySpark and Spark SQL
+- **Namespace Support** - organize tables by namespaces (JDBC Catalog)
+- **Automated Backup/Restore** - database-level backup tools included
 - **Production-Ready Configuration** with best practices
 
 ## 📋 Prerequisites
@@ -22,6 +24,7 @@ A production-ready Docker image integrating Apache Spark with Apache Iceberg and
 - Docker (20.10+)
 - Docker Compose (1.29+)
 - Aliyun OSS Account with Access Key and Secret
+- (Optional) PostgreSQL 15+ if running outside Docker (JDBC Catalog requires it)
 
 ## 🚀 Quick Start
 
@@ -110,6 +113,17 @@ Then paste SQL commands from `examples/iceberg_sql_examples.sql`.
 
 ## 📚 Architecture
 
+### Catalog: JDBC Catalog (PostgreSQL)
+
+The project uses **PostgreSQL JDBC Catalog** for metadata storage instead of Hadoop Catalog. This provides:
+
+- **Namespace support** - organize tables by namespaces
+- **Database-level backup/restore** - `./scripts/backup-restore.sh`
+- **Complete audit logs** - track all operations in database
+- **Better concurrency** - ACID transactions for metadata operations
+
+PostgreSQL is automatically started as a Docker container alongside Spark.
+
 ### Components
 
 ```
@@ -118,19 +132,21 @@ Then paste SQL commands from `examples/iceberg_sql_examples.sql`.
 │  ┌───────────────────────────────────────────────────────┐  │
 │  │           Apache Iceberg 1.8.1 Runtime                │  │
 │  │  ┌─────────────────────────────────────────────────┐  │  │
-│  │  │         Hadoop Aliyun OSS Connector            │  │  │
+│  │  │    PostgreSQL JDBC Catalog (Metadata)          │  │  │
+│  │  │                                                 │  │  │
+│  │  │    Hadoop Aliyun OSS Connector (Data)          │  │  │
 │  │  │  ┌───────────────────────────────────────────┐  │  │  │
 │  │  │  │      Aliyun OSS SDK 3.18.5                │  │  │  │
 │  │  │  └───────────────────────────────────────────┘  │  │  │
 │  │  └─────────────────────────────────────────────────┘  │  │
 │  └───────────────────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────────────┘
-                            │
-                            ▼
-                ┌───────────────────────┐
-                │   Aliyun OSS Storage  │
-                │   oss://bucket/path   │
-                └───────────────────────┘
+       │                              │
+       ▼                              ▼
+ ┌──────────────┐         ┌──────────────────┐
+ │ PostgreSQL   │         │ Aliyun OSS       │
+ │ (Metadata)   │         │ (Data Storage)   │
+ └──────────────┘         └──────────────────┘
 ```
 
 ### Dependencies
@@ -139,6 +155,8 @@ Then paste SQL commands from `examples/iceberg_sql_examples.sql`.
 |-----------|---------|---------|
 | Apache Spark | 3.5.5 | Distributed computing engine |
 | Apache Iceberg | 1.8.1 | Table format for huge analytic datasets |
+| PostgreSQL | 15 | JDBC Catalog metadata storage |
+| PostgreSQL Driver | 42.7.1 | JDBC driver for PostgreSQL |
 | Hadoop Aliyun | 3.3.4 | OSS FileSystem implementation |
 | Aliyun SDK OSS | 3.18.5 | Aliyun OSS client library |
 | JDOM2 | 2.0.6.1 | XML processing (OSS dependency) |
@@ -147,15 +165,19 @@ Then paste SQL commands from `examples/iceberg_sql_examples.sql`.
 
 ### Spark Configuration (`conf/spark-defaults.conf`)
 
-Key configurations for Iceberg and OSS:
+Uses PostgreSQL JDBC Catalog for metadata storage:
 
 ```properties
-# Iceberg Catalog
+# Iceberg JDBC Catalog (metadata stored in PostgreSQL)
 spark.sql.catalog.iceberg_catalog=org.apache.iceberg.spark.SparkCatalog
-spark.sql.catalog.iceberg_catalog.type=hadoop
+spark.sql.catalog.iceberg_catalog.type=jdbc
 spark.sql.catalog.iceberg_catalog.warehouse=oss://your-bucket/warehouse
+spark.sql.catalog.iceberg_catalog.uri=jdbc:postgresql://postgres:5432/iceberg_catalog
+spark.sql.catalog.iceberg_catalog.jdbc.user=iceberg_user
+spark.sql.catalog.iceberg_catalog.jdbc.password=iceberg_password
+spark.sql.catalog.iceberg_catalog.jdbc.driver=org.postgresql.Driver
 
-# OSS Access
+# OSS Storage (data stored in OSS)
 spark.hadoop.fs.oss.endpoint=oss-cn-hangzhou.aliyuncs.com
 spark.hadoop.fs.oss.accessKeyId=YOUR_ACCESS_KEY_ID
 spark.hadoop.fs.oss.accessKeySecret=YOUR_ACCESS_KEY_SECRET
@@ -167,14 +189,41 @@ spark.sql.extensions=org.apache.iceberg.spark.extensions.IcebergSparkSessionExte
 
 ### Environment Variables
 
-You can override configuration using environment variables:
+Configure in `.env` file:
 
 - `OSS_ENDPOINT`: OSS endpoint URL (default: oss-cn-hangzhou.aliyuncs.com)
-- `OSS_ACCESS_KEY_ID`: Your Aliyun Access Key ID
-- `OSS_ACCESS_KEY_SECRET`: Your Aliyun Access Key Secret
-- `OSS_BUCKET`: OSS bucket name for data storage
+- `OSS_ACCESS_KEY_ID`: Your Aliyun Access Key ID (required)
+- `OSS_ACCESS_KEY_SECRET`: Your Aliyun Access Key Secret (required)
+- `OSS_BUCKET`: OSS bucket name for data storage (required)
+- `DB_HOST`: PostgreSQL hostname (default: postgres)
+- `DB_PORT`: PostgreSQL port (default: 5432)
+- `DB_USER`: PostgreSQL user (default: iceberg_user)
+- `DB_PASSWORD`: PostgreSQL password (default: iceberg_password)
 
 ## 📖 Usage Examples
+
+### Namespace Support
+
+```sql
+-- Create namespaces
+CREATE NAMESPACE production;
+CREATE NAMESPACE staging;
+
+-- Create table in namespace
+CREATE TABLE production.users (
+    id BIGINT,
+    name STRING,
+    age INT,
+    created_at TIMESTAMP
+) USING iceberg
+PARTITIONED BY (days(created_at));
+
+-- List namespaces
+SHOW NAMESPACES;
+
+-- Tables in namespace
+SHOW TABLES IN production;
+```
 
 ### Creating an Iceberg Table
 
@@ -244,6 +293,37 @@ USING source_table s
 ON t.id = s.id
 WHEN MATCHED THEN UPDATE SET *
 WHEN NOT MATCHED THEN INSERT *;
+```
+
+### Backup and Restore
+
+JDBC Catalog metadata can be backed up and restored:
+
+```bash
+# Backup
+./scripts/backup-restore.sh backup
+
+# List backups
+./scripts/backup-restore.sh list
+
+# Restore
+./scripts/backup-restore.sh restore .backup/iceberg_20240202_120000.sql.gz
+
+# Verify backup integrity
+./scripts/backup-restore.sh verify .backup/iceberg_20240202_120000.sql.gz
+```
+
+Automatic cleanup keeps only the latest 7 backups.
+
+### Audit Log
+
+View all operations on tables and namespaces:
+
+```sql
+SELECT operation, user_name, created_at, details 
+FROM iceberg.transaction_log 
+ORDER BY created_at DESC 
+LIMIT 10;
 ```
 
 ## 🛠️ Advanced Usage

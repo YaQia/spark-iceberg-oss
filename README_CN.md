@@ -137,8 +137,12 @@ Iceberg 和 OSS 的关键配置：
 ```properties
 # Iceberg 目录
 spark.sql.catalog.iceberg_catalog=org.apache.iceberg.spark.SparkCatalog
-spark.sql.catalog.iceberg_catalog.type=hadoop
+spark.sql.catalog.iceberg_catalog.type=jdbc
 spark.sql.catalog.iceberg_catalog.warehouse=oss://your-bucket/warehouse
+spark.sql.catalog.iceberg_catalog.uri=jdbc:postgresql://postgres:5432/iceberg_catalog
+spark.sql.catalog.iceberg_catalog.jdbc.user=iceberg_user
+spark.sql.catalog.iceberg_catalog.jdbc.password=iceberg_password
+spark.sql.catalog.iceberg_catalog.jdbc.driver=org.postgresql.Driver
 
 # OSS 访问配置
 spark.hadoop.fs.oss.endpoint=oss-cn-hangzhou.aliyuncs.com
@@ -240,6 +244,10 @@ spark-submit \
     --master spark://spark-master:7077 \
     --conf spark.sql.catalog.iceberg_catalog=org.apache.iceberg.spark.SparkCatalog \
     --conf spark.sql.catalog.iceberg_catalog.warehouse=oss://your-bucket/warehouse \
+spark.sql.catalog.iceberg_catalog.uri=jdbc:postgresql://postgres:5432/iceberg_catalog
+spark.sql.catalog.iceberg_catalog.jdbc.user=iceberg_user
+spark.sql.catalog.iceberg_catalog.jdbc.password=iceberg_password
+spark.sql.catalog.iceberg_catalog.jdbc.driver=org.postgresql.Driver
     --conf spark.hadoop.fs.oss.endpoint=oss-cn-hangzhou.aliyuncs.com \
     --conf spark.hadoop.fs.oss.accessKeyId=YOUR_KEY \
     --conf spark.hadoop.fs.oss.accessKeySecret=YOUR_SECRET \
